@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
+<title>Plan de entrenamiento</title>
+<style>
+  :root{
+    --bg:#0f1115;
+    --bg-elev:#171a21;
+    --bg-card:#1c202b;
+    --bg-card-2:#232838;
+    --text:#f0f2f5;
+    --text-dim:#9aa1b0;
+    --text-faint:#6b7182;
+    --border:#2a2f3c;
+    --accent:#5b8cff;
+    --accent-fuerza:#5b8cff;
+    --accent-cardio:#33c98d;
+    --accent-deporte:#ffb454;
+    --accent-descanso:#6b7280;
+    --warn-bg:#332a12;
+    --warn-border:#8a6a1f;
+    --warn-text:#ffd479;
+    --ok:#33c98d;
+    --radius:14px;
+    --tap:48px;
+  }
+  [data-theme="light"]{
+    --bg:#f4f5f7;
+    --bg-elev:#ffffff;
+    --bg-card:#ffffff;
+    --bg-card-2:#eef0f4;
+    --text:#181a20;
+    --text-dim:#565c6b;
+    --text-faint:#8991a3;
+    --border:#dde1e8;
+    --accent:#2f5fe0;
+    --accent-fuerza:#2f5fe0;
+    --accent-cardio:#0e9d68;
+    --accent-deporte:#c97a10;
+    --accent-descanso:#7a8190;
+    --warn-bg:#fff4dc;
+    --warn-border:#e8b34a;
+    --warn-text:#7a5410;
+    --ok:#0e9d68;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:17px;
+    line-height:1.4;
+    -webkit-tap-highlight-color:transparent;
+    padding-bottom:48px;
+  }
+  h1,h2,h3,p,ul{margin:0;}
+  button{
+    font:inherit;
+    color:inherit;
+    background:none;
+    border:none;
+    cursor:pointer;
+  }
+  input[type=text]{font:inherit;color:inherit;}
+
+  /* ---------- header ---------- */
+  header{
+    position:sticky;
+    top:0;
+    z-index:50;
+    background:var(--bg-elev);
+    border-bottom:1px solid var(--border);
+    padding:10px 14px calc(10px + env(safe-area-inset-top,0px));
+    padding-top:10px;
+  }
+  .header-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .header-titles{min-width:0;}
+  .header-titles h1{font-size:19px;font-weight:700;letter-spacing:-0.2px;}
+  .header-titles .objetivo{font-size:13.5px;color:var(--text-dim);margin-top:2px;}
+  .header-actions{display:flex;gap:6px;flex-shrink:0;}
+  .icon-btn{
+    width:var(--tap);height:var(--tap);
+    display:flex;align-items:center;justify-content:center;
+    border-radius:12px;
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    font-size:19px;
+  }
+  .icon-btn:active{background:var(--bg-card-2);}
+
+  .week-select{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+    margin-top:10px;
+  }
+  .week-select button{
+    height:var(--tap);
+    border-radius:12px;
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    font-weight:700;
+    font-size:15px;
+    color:var(--text-dim);
+  }
+  .week-select button.active{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+
+  /* ---------- main ---------- */
+  main{padding:14px;max-width:640px;margin:0 auto;}
+
+  .week-highlight{
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:14px 16px;
+    margin-bottom:16px;
+  }
+  .week-highlight .week-label{
+    font-size:12.5px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--accent);
+    font-weight:700;
+  }
+  .week-highlight h2{font-size:20px;margin-top:4px;}
+  .week-highlight .foco{color:var(--text-dim);margin-top:6px;font-size:15px;}
+  .week-highlight .progreso{
+    margin-top:10px;
+    font-size:14px;
+    font-weight:700;
+    color:var(--ok);
+  }
+
+  section.block{margin-bottom:22px;}
+  section.block > h3{
+    font-size:14px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--text-dim);
+    margin-bottom:10px;
+    padding-left:2px;
+  }
+
+  /* ---------- session cards ---------- */
+  .session-card{
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    margin-bottom:10px;
+    overflow:hidden;
+    border-left:4px solid var(--tipo-color, var(--accent));
+  }
+  .session-card[data-tipo="fuerza"]{--tipo-color:var(--accent-fuerza);}
+  .session-card[data-tipo="cardio"]{--tipo-color:var(--accent-cardio);}
+  .session-card[data-tipo="deporte"]{--tipo-color:var(--accent-deporte);}
+  .session-card summary{
+    list-style:none;
+    cursor:pointer;
+    padding:13px 14px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-height:var(--tap);
+  }
+  .session-card summary::-webkit-details-marker{display:none;}
+  .session-card summary .chk-wrap{
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:32px;height:32px;
+  }
+  .session-card summary input[type=checkbox]{
+    width:26px;height:26px;
+    accent-color:var(--ok);
+  }
+  .session-card summary .info{flex:1;min-width:0;}
+  .session-card summary .dia{
+    font-size:12px;
+    color:var(--tipo-color);
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+  }
+  .session-card summary .nombre{
+    font-size:16px;
+    font-weight:700;
+    margin-top:1px;
+  }
+  .session-card summary .meta{
+    font-size:13px;
+    color:var(--text-dim);
+    margin-top:2px;
+  }
+  .session-card summary .chevron{
+    flex-shrink:0;
+    width:22px;height:22px;
+    color:var(--text-faint);
+    transition:transform .15s ease;
+  }
+  .session-card[open] summary .chevron{transform:rotate(180deg);}
+  .session-card.completed{border-left-color:var(--ok);}
+  .session-card.completed summary .nombre{color:var(--ok);}
+
+  .session-body{
+    padding:0 14px 16px;
+    border-top:1px solid var(--border);
+  }
+  .warmup{
+    margin:14px 0;
+    padding:10px 12px;
+    background:var(--bg-card-2);
+    border-radius:10px;
+    font-size:14px;
+    color:var(--text-dim);
+  }
+  .warmup b{color:var(--text);display:block;font-size:12px;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;}
+
+  .ex-row{
+    padding:12px 0;
+    border-top:1px solid var(--border);
+  }
+  .ex-row:first-of-type{border-top:none;}
+  .ex-row-head{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .ex-icon-wrap{
+    flex-shrink:0;
+    width:38px;height:38px;
+    border-radius:10px;
+    background:var(--bg-card-2);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--text-dim);
+  }
+  .ex-row.basico .ex-icon-wrap{
+    background:color-mix(in srgb, var(--tipo-color, var(--accent)) 18%, var(--bg-card-2));
+    color:var(--tipo-color, var(--accent));
+  }
+  .ex-order{
+    flex-shrink:0;
+    width:22px;
+    text-align:center;
+    font-size:13px;
+    color:var(--text-faint);
+    font-weight:700;
+  }
+  .ex-title{flex:1;min-width:0;}
+  .ex-nombre{
+    font-size:15.5px;
+    font-weight:600;
+  }
+  .ex-row.basico .ex-nombre{font-weight:800;font-size:16.5px;}
+  .ex-tag-basico{
+    display:inline-block;
+    font-size:10px;
+    font-weight:800;
+    color:var(--tipo-color,var(--accent));
+    border:1px solid var(--tipo-color,var(--accent));
+    border-radius:5px;
+    padding:1px 5px;
+    margin-left:6px;
+    vertical-align:middle;
+    letter-spacing:0.04em;
+  }
+  .ex-stats{
+    display:flex;
+    gap:14px;
+    margin-top:8px;
+    padding-left:48px;
+    flex-wrap:wrap;
+  }
+  .stat{min-width:56px;}
+  .stat .num{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums;}
+  .stat .lbl{font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.04em;}
+
+  .ex-extra{
+    padding-left:48px;
+    margin-top:10px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .peso-field{display:flex;flex-direction:column;gap:4px;}
+  .peso-field label{font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.04em;}
+  .peso-field input{
+    background:var(--bg-card-2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:11px 12px;
+    min-height:var(--tap);
+    font-size:16px;
+    color:var(--text);
+  }
+  .peso-field input::placeholder{color:var(--text-faint);}
+  .peso-hint{font-size:12.5px;color:var(--text-faint);}
+  .peso-hint b{color:var(--text-dim);font-weight:600;}
+
+  .row-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .btn{
+    min-height:var(--tap);
+    padding:0 14px;
+    border-radius:10px;
+    background:var(--bg-card-2);
+    border:1px solid var(--border);
+    font-size:14px;
+    font-weight:600;
+    color:var(--text-dim);
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  .btn:active{background:var(--border);}
+  .btn.timer-btn.running{
+    background:var(--tipo-color,var(--accent));
+    color:#fff;
+    border-color:var(--tipo-color,var(--accent));
+  }
+  .btn.timer-btn .tnum{font-variant-numeric:tabular-nums;font-weight:800;}
+
+  .tecnica-panel{
+    margin-top:8px;
+    padding:12px;
+    background:var(--bg-card-2);
+    border-radius:10px;
+    font-size:14px;
+    color:var(--text-dim);
+  }
+  .tecnica-panel .ex-icon-big{
+    display:flex;justify-content:center;
+    color:var(--tipo-color,var(--accent));
+    margin-bottom:8px;
+  }
+  .tecnica-panel .tec-txt{color:var(--text);}
+  .tecnica-panel .alt-title{
+    margin-top:10px;font-size:11px;text-transform:uppercase;
+    letter-spacing:0.04em;color:var(--text-faint);
+  }
+  .tecnica-panel ul{margin-top:4px;padding-left:18px;}
+  .tecnica-panel li{margin-top:2px;}
+
+  .deporte-note{
+    padding:14px 0 4px;
+    color:var(--text-dim);
+    font-size:14.5px;
+  }
+
+  /* ---------- info sections ---------- */
+  .principio{
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:12px 14px;
+    margin-bottom:8px;
+  }
+  .principio h4{font-size:15px;font-weight:700;margin-bottom:4px;}
+  .principio p{font-size:14px;color:var(--text-dim);}
+
+  .calendario-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:6px;
+  }
+  .cal-day{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-left:4px solid var(--tipo-color,var(--accent-descanso));
+    border-radius:10px;
+    padding:10px 12px;
+  }
+  .cal-day[data-tipo="fuerza"]{--tipo-color:var(--accent-fuerza);}
+  .cal-day[data-tipo="cardio"]{--tipo-color:var(--accent-cardio);}
+  .cal-day[data-tipo="deporte"]{--tipo-color:var(--accent-deporte);}
+  .cal-day[data-tipo="descanso"]{--tipo-color:var(--accent-descanso);}
+  .cal-day .cal-dia{width:78px;flex-shrink:0;font-weight:700;font-size:13.5px;}
+  .cal-day .cal-act{font-size:14px;color:var(--text-dim);}
+
+  .notas-block{
+    background:var(--warn-bg);
+    border:1px solid var(--warn-border);
+    border-radius:var(--radius);
+    padding:14px 16px;
+  }
+  .notas-block h3{color:var(--warn-text);}
+  .notas-block ul{padding-left:20px;}
+  .notas-block li{color:var(--warn-text);font-size:14px;margin-top:8px;}
+  .notas-block li:first-child{margin-top:0;}
+
+  .export-wrap{margin-top:22px;text-align:center;}
+  .export-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    min-height:var(--tap);
+    padding:0 20px;
+    border-radius:12px;
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    font-weight:700;
+    font-size:15px;
+    color:var(--text);
+  }
+  .export-btn:active{background:var(--bg-card-2);}
+  .footer-note{
+    text-align:center;
+    font-size:12px;
+    color:var(--text-faint);
+    margin-top:14px;
+  }
+  .toast{
+    position:fixed;
+    left:50%;bottom:20px;
+    transform:translateX(-50%);
+    background:var(--bg-elev);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:10px 16px;
+    border-radius:10px;
+    font-size:14px;
+    box-shadow:0 4px 20px rgba(0,0,0,.3);
+    z-index:100;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease;
+  }
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="header-titles">
+      <h1 id="app-title"></h1>
+      <div class="objetivo" id="app-objetivo"></div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="theme-toggle" aria-label="Cambiar tema" title="Cambiar tema">🌙</button>
+    </div>
+  </div>
+  <div class="week-select" id="week-select"></div>
+</header>
+
+<main>
+  <div class="week-highlight" id="week-highlight"></div>
+  <section class="block" id="sessions-block">
+    <h3>Sesiones</h3>
+    <div id="sessions"></div>
+  </section>
+
+  <section class="block" id="principios-block">
+    <h3>Principios del plan</h3>
+    <div id="principios"></div>
+  </section>
+
+  <section class="block" id="calendario-block">
+    <h3>Semana tipo</h3>
+    <div class="calendario-grid" id="calendario"></div>
+  </section>
+
+  <section class="block" id="notas-block-wrap">
+    <div class="notas-block">
+      <h3>Advertencias y recordatorios</h3>
+      <ul id="notas"></ul>
+    </div>
+  </section>
+
+  <div class="export-wrap">
+    <button class="export-btn" id="export-btn">⬇️ Exportar registro guardado</button>
+  </div>
+  <div class="footer-note">Los datos se guardan solo en este dispositivo.</div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   DATOS DEL PLAN (embebidos, sin fetch para funcionar en file://)
+   ========================================================= */
+const DATA = {"meta":{"titulo":"Plan de entrenamiento - Mes 1","objetivo":"Perdida de grasa conservando masa muscular","perfil":{"edad":30,"alturaCm":180,"sexo":"masculino","nivel":"Intermedio en fuerza, irregular en constancia","deportesActuales":["Futbol semanal","Padel ocasional"],"limitaciones":"Evitar impacto repetido (trote, saltos, pliometria) por la carga articular."},"duracionSemanas":4,"sesionesFuerzaPorSemana":3,"generadoPor":"Claude"},"principios":[{"titulo":"Full body, no rutina dividida","detalle":"Cada sesion toca todo el cuerpo. Si faltas un dia no queda ningun grupo muscular sin entrenar esa semana. Es el formato que mejor tolera la falta de constancia."},{"titulo":"RIR: repeticiones en reserva","detalle":"Un RIR de 2 significa terminar la serie pudiendo hacer 2 repeticiones mas. No se llega al fallo salvo indicacion. Es el metodo mas simple para regular la carga sin calcular porcentajes."},{"titulo":"Progresion semanal","detalle":"Si completas todas las series en el rango alto de repeticiones con el RIR indicado, subi el peso la proxima sesion. Si no llegas al rango bajo, mantene o baja."},{"titulo":"Sesion minima","detalle":"En un dia sin ganas: entrenas solo los primeros dos ejercicios y te vas. Cuenta como dia cumplido. La regla existe para no romper la racha."},{"titulo":"Caminata diaria","detalle":"8.000 a 10.000 pasos todos los dias, incluidos los de descanso. Es la variable que mas gasto calorico aporta en el conjunto de la semana y no interfiere con la recuperacion."},{"titulo":"La balanza no es el unico marcador","detalle":"Registra tambien los pesos levantados y el perimetro de cintura. Es habitual que el peso corporal se estanque mientras la composicion corporal sigue mejorando."}],"calendarioSemanal":[{"dia":"Lunes","actividad":"Fuerza - Dia A","tipo":"fuerza"},{"dia":"Martes","actividad":"Descanso activo: caminata 40-50 min","tipo":"descanso"},{"dia":"Miercoles","actividad":"Fuerza - Dia B","tipo":"fuerza"},{"dia":"Jueves","actividad":"Cardio LISS","tipo":"cardio"},{"dia":"Viernes","actividad":"Fuerza - Dia C","tipo":"fuerza"},{"dia":"Sabado","actividad":"Futbol (o padel)","tipo":"deporte"},{"dia":"Domingo","actividad":"Descanso total","tipo":"descanso"}],"catalogoEjercicios":{"sentadilla_goblet":{"nombre":"Sentadilla goblet","grupo":"Piernas","patron":"Rodilla dominante","tecnica":"Mancuerna o pesa rusa sujeta contra el pecho. Bajar con el torso lo mas vertical posible, rodillas hacia afuera. Bajar hasta donde la espalda mantenga la curva natural.","alternativas":["Prensa 45 grados","Sentadilla en multipower"]},"press_plano_mancuernas":{"nombre":"Press plano con mancuernas","grupo":"Pecho","patron":"Empuje horizontal","tecnica":"Escapulas retraidas contra el banco. Codos a unos 45 grados del torso, no abiertos del todo.","alternativas":["Press en maquina","Press plano con barra"]},"remo_maquina":{"nombre":"Remo en maquina con pecho apoyado","grupo":"Espalda","patron":"Traccion horizontal","tecnica":"Llevar los codos hacia atras, no las manos. Pausa de medio segundo al final del recorrido.","alternativas":["Remo con barra T","Remo en polea baja"]},"curl_femoral":{"nombre":"Curl femoral en maquina","grupo":"Isquiotibiales","patron":"Aislamiento","tecnica":"Bajada controlada en 3 segundos. No despegar la cadera del apoyo.","alternativas":["Curl femoral sentado","Curl nordico asistido"]},"elevaciones_laterales":{"nombre":"Elevaciones laterales","grupo":"Hombros","patron":"Aislamiento","tecnica":"Peso liviano, subir hasta la altura del hombro. Sin impulso de cadera.","alternativas":["Elevaciones en polea","Elevaciones en maquina"]},"plancha":{"nombre":"Plancha frontal","grupo":"Core","patron":"Anti-extension","tecnica":"Gluteos apretados y costillas hacia abajo. Si la zona lumbar se hunde, cortar la serie.","alternativas":["Plancha con rodillas apoyadas","Plancha en banco inclinado"]},"peso_muerto_rumano":{"nombre":"Peso muerto rumano","grupo":"Isquiotibiales y gluteos","patron":"Cadera dominante","tecnica":"Llevar la cadera hacia atras con rodillas semiflexionadas. Bajar hasta sentir estiramiento en la parte posterior del muslo, no mas.","alternativas":["Peso muerto rumano con mancuernas","Buenos dias en multipower"]},"jalon_pecho":{"nombre":"Jalon al pecho","grupo":"Espalda","patron":"Traccion vertical","tecnica":"Pecho arriba, llevar la barra a la clavicula. Sin balanceo del torso.","alternativas":["Dominadas asistidas en maquina","Jalon con agarre neutro"]},"press_militar_sentado":{"nombre":"Press militar sentado con mancuernas","grupo":"Hombros","patron":"Empuje vertical","tecnica":"Respaldo alto, core firme. No arquear la lumbar para completar la repeticion.","alternativas":["Press en maquina","Press Arnold liviano"]},"prensa_unilateral":{"nombre":"Prensa a una pierna","grupo":"Piernas","patron":"Unilateral","tecnica":"Pie centrado en la plataforma, recorrido controlado. Empezar siempre por la pierna mas debil.","alternativas":["Zancada estatica tomado de un soporte","Step-up a cajon bajo"]},"curl_martillo":{"nombre":"Curl martillo","grupo":"Biceps","patron":"Aislamiento","tecnica":"Codos pegados al torso, sin balanceo.","alternativas":["Curl con barra Z","Curl en polea"]},"farmer_walk":{"nombre":"Farmer walk (caminata del granjero)","grupo":"Core y agarre","patron":"Carga transportada","tecnica":"Mancuernas pesadas a los costados, hombros atras, pasos cortos y firmes. Excelente para vos: alta demanda con cero impacto.","alternativas":["Suitcase carry (una sola mancuerna)","Caminata con trap bar"]},"hip_thrust":{"nombre":"Hip thrust","grupo":"Gluteos","patron":"Cadera dominante","tecnica":"Espalda alta apoyada en el banco, menton hacia el pecho. Pausa de 1 segundo arriba apretando el gluteo.","alternativas":["Puente de gluteos en el piso","Hip thrust en maquina"]},"press_inclinado":{"nombre":"Press inclinado con mancuernas","grupo":"Pecho","patron":"Empuje horizontal","tecnica":"Banco a 30 grados. Mas inclinacion carga el hombro sin dar mas pecho.","alternativas":["Press inclinado en maquina","Press inclinado en multipower"]},"remo_unilateral":{"nombre":"Remo unilateral con mancuerna","grupo":"Espalda","patron":"Traccion horizontal","tecnica":"Una rodilla y una mano apoyadas en el banco. Espalda paralela al piso, sin rotar el torso.","alternativas":["Remo en polea unilateral","Remo en maquina a un brazo"]},"extension_cuadriceps":{"nombre":"Extension de cuadriceps","grupo":"Cuadriceps","patron":"Aislamiento","tecnica":"Pausa arriba, bajada controlada. Si molesta la rodilla, reducir el rango final.","alternativas":["Sentadilla goblet a cajon","Prensa con recorrido corto"]},"face_pull":{"nombre":"Face pull","grupo":"Hombro posterior","patron":"Traccion horizontal alta","tecnica":"Polea a la altura de la cara, llevar la cuerda hacia la frente separando las manos. Clave para compensar tanto empuje.","alternativas":["Pajaro con mancuernas","Aperturas invertidas en maquina"]},"pallof_press":{"nombre":"Pallof press","grupo":"Core","patron":"Anti-rotacion","tecnica":"De costado a la polea, extender los brazos al frente resistiendo la rotacion. No mover la cadera.","alternativas":["Plancha lateral","Pallof con banda elastica"]}},"semanas":[{"numero":1,"titulo":"Adaptacion","foco":"Aprender los movimientos y dejar cargas anotadas. Esta semana deberia terminar sintiendo que le sobraba.","sesiones":[{"id":"s1-a","clave":"A","tipo":"fuerza","diaSugerido":"Lunes","nombre":"Dia A - Full body (enfasis empuje)","duracionEstimadaMin":55,"entradaEnCalor":"5 min de bici o eliptica suave + 1 serie liviana de los dos primeros ejercicios.","ejercicios":[{"orden":1,"ejercicioId":"sentadilla_goblet","nombre":"Sentadilla goblet","grupo":"Piernas","series":3,"reps":"8-12","rir":3,"descansoSegundos":150,"esBasico":true,"tecnica":"Mancuerna o pesa rusa sujeta contra el pecho. Bajar con el torso lo mas vertical posible, rodillas hacia afuera. Bajar hasta donde la espalda mantenga la curva natural.","alternativas":["Prensa 45 grados","Sentadilla en multipower"]},{"orden":2,"ejercicioId":"press_plano_mancuernas","nombre":"Press plano con mancuernas","grupo":"Pecho","series":3,"reps":"8-12","rir":3,"descansoSegundos":150,"esBasico":true,"tecnica":"Escapulas retraidas contra el banco. Codos a unos 45 grados del torso, no abiertos del todo.","alternativas":["Press en maquina","Press plano con barra"]},{"orden":3,"ejercicioId":"remo_maquina","nombre":"Remo en maquina con pecho apoyado","grupo":"Espalda","series":3,"reps":"10-12","rir":3,"descansoSegundos":150,"esBasico":true,"tecnica":"Llevar los codos hacia atras, no las manos. Pausa de medio segundo al final del recorrido.","alternativas":["Remo con barra T","Remo en polea baja"]},{"orden":4,"ejercicioId":"curl_femoral","nombre":"Curl femoral en maquina","grupo":"Isquiotibiales","series":3,"reps":"12-15","rir":3,"descansoSegundos":75,"esBasico":false,"tecnica":"Bajada controlada en 3 segundos. No despegar la cadera del apoyo.","alternativas":["Curl femoral sentado","Curl nordico asistido"]},{"orden":5,"ejercicioId":"elevaciones_laterales","nombre":"Elevaciones laterales","grupo":"Hombros","series":3,"reps":"12-15","rir":3,"descansoSegundos":75,"esBasico":false,"tecnica":"Peso liviano, subir hasta la altura del hombro. Sin impulso de cadera.","alternativas":["Elevaciones en polea","Elevaciones en maquina"]},{"orden":6,"ejercicioId":"plancha","nombre":"Plancha frontal","grupo":"Core","series":3,"reps":"30-45 seg","rir":3,"descansoSegundos":75,"esBasico":false,"tecnica":"Gluteos apretados y costillas hacia abajo. Si la zona lumbar se hunde, cortar la serie.","alternativas":["Plancha con rodillas apoyadas","Plancha en banco inclinado"]}]},{"id":"s1-b","clave":"B","tipo":"fuerza","diaSugerido":"Miercoles","nombre":"Dia B - Full body (enfasis traccion)","duracionEstimadaMin":55,"entradaEnCalor":"5 min de bici o eliptica suave + 1 serie liviana de los dos primeros ejercicios.","ejercicios":[{"orden":1,"ejercicioId":"peso_muerto_rumano","nombre":"Peso muerto rumano","grupo":"Isquiotibiales y gluteos","series":3,"reps":"8-10","rir":3,"descansoSegundos":150,"esBasico":true,"tecnica":"Llevar la cadera hacia atras con rodillas semiflexionadas. Bajar hasta sentir estiramiento en la parte posterior del muslo, no mas.","alternativas":["Peso muerto rumano con mancuernas","Buenos dias en multipower"]},{"orden":2,"ejercicioId":"jalon_pecho","nombre":"Jalon al pecho","grupo":"Espalda","series":3,"reps":"8-12","rir":3,"descansoSegundos":150,"esBasico":true,"tecnica":"Pecho arriba, llevar la barra a la clavicula. Sin balanceo del torso.","alternativas":["Dominadas asistidas en maquina","Jalon con agarre neutro"]},{"orden":3,"ejercicioId":"press_militar_sentado","nombre":"Press militar sentado con mancuernas","grupo":"Hombros","series":3,"reps":"8-12","rir":3,"descansoSegundos":150,"esBasico":true,"tecnica":"Respaldo alto, core firme. No arquear la lumbar para completar la repeticion.","alternativas":["Press en maquina","Press Arnold liviano"]},{"orden":4,"ejercicioId":"prensa_unilateral","nombre":"Prensa a una pierna","grupo":"Piernas","series":3,"reps":"10-12 por pierna","rir":3,"descansoSegundos":75,"esBasico":false,"tecnica":"Pie centrado en la plataforma, recorrido controlado. Empezar siempre por la pierna mas debil.","alternativas":["Zancada estatica tomado de un soporte","Step-up a cajon bajo"]},{"orden":5,"ejercicioId":"curl_martillo","nombre":"Curl martillo","grupo":"Biceps","series":3,"reps":"12-15","rir":3,"descansoSegundos":75,"esBasico":false,"tecnica":"Codos pegados al torso, sin balanceo.","alternativas":["Curl con barra Z","Curl en polea"]},{"orden":6,"ejercicioId":"farmer_walk","nombre":"Farmer walk (caminata del granjero)","grupo":"Core y agarre","series":3,"reps":"40 metros","rir":3,"descansoSegundos":75,"esBasico":false,"tecnica":"Mancuernas pesadas a los costados, hombros atras, pasos cortos y firmes. Excelente para vos: alta demanda con cero impacto.","alternativas":["Suitcase carry (una sola mancuerna)","Caminata con trap bar"]}]},{"id":"s1-c","clave":"C","tipo":"fuerza","diaSugerido":"Viernes","nombre":"Dia C - Full body (enfasis cadera y espalda)","duracionEstimadaMin":55,"entradaEnCalor":"5 min de bici o eliptica suave + 1 serie liviana de los dos primeros ejercicios.","ejercicios":[{"orden":1,"ejercicioId":"hip_thrust","nombre":"Hip thrust","grupo":"Gluteos","series":3,"reps":"10-12","rir":3,"descansoSegundos":150,"esBasico":true,"tecnica":"Espalda alta apoyada en el banco, menton hacia el pecho. Pausa de 1 segundo arriba apretando el gluteo.","alternativas":["Puente de gluteos en el piso","Hip thrust en maquina"]},{"orden":2,"ejercicioId":"press_inclinado","nombre":"Press inclinado con mancuernas","grupo":"Pecho","series":3,"reps":"8-12","rir":3,"descansoSegundos":150,"esBasico":true,"tecnica":"Banco a 30 grados. Mas inclinacion carga el hombro sin dar mas pecho.","alternativas":["Press inclinado en maquina","Press inclinado en multipower"]},{"orden":3,"ejercicioId":"remo_unilateral","nombre":"Remo unilateral con mancuerna","grupo":"Espalda","series":3,"reps":"10-12 por lado","rir":3,"descansoSegundos":150,"esBasico":true,"tecnica":"Una rodilla y una mano apoyadas en el banco. Espalda paralela al piso, sin rotar el torso.","alternativas":["Remo en polea unilateral","Remo en maquina a un brazo"]},{"orden":4,"ejercicioId":"extension_cuadriceps","nombre":"Extension de cuadriceps","grupo":"Cuadriceps","series":3,"reps":"12-15","rir":3,"descansoSegundos":75,"esBasico":false,"tecnica":"Pausa arriba, bajada controlada. Si molesta la rodilla, reducir el rango final.","alternativas":["Sentadilla goblet a cajon","Prensa con recorrido corto"]},{"orden":5,"ejercicioId":"face_pull","nombre":"Face pull","grupo":"Hombro posterior","series":3,"reps":"15-20","rir":3,"descansoSegundos":75,"esBasico":false,"tecnica":"Polea a la altura de la cara, llevar la cuerda hacia la frente separando las manos. Clave para compensar tanto empuje.","alternativas":["Pajaro con mancuernas","Aperturas invertidas en maquina"]},{"orden":6,"ejercicioId":"pallof_press","nombre":"Pallof press","grupo":"Core","series":3,"reps":"12 por lado","rir":3,"descansoSegundos":75,"esBasico":false,"tecnica":"De costado a la polea, extender los brazos al frente resistiendo la rotacion. No mover la cadera.","alternativas":["Plancha lateral","Pallof con banda elastica"]}]},{"id":"s1-cardio","clave":"CARDIO","tipo":"cardio","diaSugerido":"Jueves","nombre":"Cardio de baja intensidad (LISS)","duracionEstimadaMin":25,"entradaEnCalor":"3 min progresivos hasta llegar al ritmo objetivo.","ejercicios":[{"orden":1,"ejercicioId":"liss","nombre":"Cinta en pendiente, bici o eliptica","grupo":"Cardiovascular","series":1,"reps":"25 min continuos","rir":null,"descansoSegundos":0,"esBasico":false,"tecnica":"Cinta al 10-12 por ciento de inclinacion a 5 km/h caminando, o bici/eliptica a un ritmo donde puedas hablar con frases cortas. Sin trote: a 130 kg el impacto repetido es el mayor riesgo de lesion del plan.","alternativas":["Bicicleta fija","Eliptica","Remo ergometro a ritmo suave"]}]},{"id":"s1-futbol","clave":"FUTBOL","tipo":"deporte","diaSugerido":"Sabado","nombre":"Futbol","duracionEstimadaMin":90,"entradaEnCalor":"10 minutos reales antes de entrar: trote muy suave, movilidad de cadera y tobillo, 4 aceleraciones progresivas al 70 por ciento. Este calentamiento es la parte mas importante del dia.","ejercicios":[]}]},{"numero":2,"titulo":"Progresion de carga","foco":"Subir peso respecto a la semana 1: 2.5 a 5 kg en tren superior, 5 a 10 kg en tren inferior.","sesiones":[{"id":"s2-a","clave":"A","tipo":"fuerza","diaSugerido":"Lunes","nombre":"Dia A - Full body (enfasis empuje)","duracionEstimadaMin":55,"entradaEnCalor":"5 min de bici o eliptica suave + 1 serie liviana de los dos primeros ejercicios.","ejercicios":[{"orden":1,"ejercicioId":"sentadilla_goblet","nombre":"Sentadilla goblet","grupo":"Piernas","series":3,"reps":"8-12","rir":2,"descansoSegundos":150,"esBasico":true,"tecnica":"Mancuerna o pesa rusa sujeta contra el pecho. Bajar con el torso lo mas vertical posible, rodillas hacia afuera. Bajar hasta donde la espalda mantenga la curva natural.","alternativas":["Prensa 45 grados","Sentadilla en multipower"]},{"orden":2,"ejercicioId":"press_plano_mancuernas","nombre":"Press plano con mancuernas","grupo":"Pecho","series":3,"reps":"8-12","rir":2,"descansoSegundos":150,"esBasico":true,"tecnica":"Escapulas retraidas contra el banco. Codos a unos 45 grados del torso, no abiertos del todo.","alternativas":["Press en maquina","Press plano con barra"]},{"orden":3,"ejercicioId":"remo_maquina","nombre":"Remo en maquina con pecho apoyado","grupo":"Espalda","series":3,"reps":"10-12","rir":2,"descansoSegundos":150,"esBasico":true,"tecnica":"Llevar los codos hacia atras, no las manos. Pausa de medio segundo al final del recorrido.","alternativas":["Remo con barra T","Remo en polea baja"]},{"orden":4,"ejercicioId":"curl_femoral","nombre":"Curl femoral en maquina","grupo":"Isquiotibiales","series":3,"reps":"12-15","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Bajada controlada en 3 segundos. No despegar la cadera del apoyo.","alternativas":["Curl femoral sentado","Curl nordico asistido"]},{"orden":5,"ejercicioId":"elevaciones_laterales","nombre":"Elevaciones laterales","grupo":"Hombros","series":3,"reps":"12-15","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Peso liviano, subir hasta la altura del hombro. Sin impulso de cadera.","alternativas":["Elevaciones en polea","Elevaciones en maquina"]},{"orden":6,"ejercicioId":"plancha","nombre":"Plancha frontal","grupo":"Core","series":3,"reps":"30-45 seg","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Gluteos apretados y costillas hacia abajo. Si la zona lumbar se hunde, cortar la serie.","alternativas":["Plancha con rodillas apoyadas","Plancha en banco inclinado"]}]},{"id":"s2-b","clave":"B","tipo":"fuerza","diaSugerido":"Miercoles","nombre":"Dia B - Full body (enfasis traccion)","duracionEstimadaMin":55,"entradaEnCalor":"5 min de bici o eliptica suave + 1 serie liviana de los dos primeros ejercicios.","ejercicios":[{"orden":1,"ejercicioId":"peso_muerto_rumano","nombre":"Peso muerto rumano","grupo":"Isquiotibiales y gluteos","series":3,"reps":"8-10","rir":2,"descansoSegundos":150,"esBasico":true,"tecnica":"Llevar la cadera hacia atras con rodillas semiflexionadas. Bajar hasta sentir estiramiento en la parte posterior del muslo, no mas.","alternativas":["Peso muerto rumano con mancuernas","Buenos dias en multipower"]},{"orden":2,"ejercicioId":"jalon_pecho","nombre":"Jalon al pecho","grupo":"Espalda","series":3,"reps":"8-12","rir":2,"descansoSegundos":150,"esBasico":true,"tecnica":"Pecho arriba, llevar la barra a la clavicula. Sin balanceo del torso.","alternativas":["Dominadas asistidas en maquina","Jalon con agarre neutro"]},{"orden":3,"ejercicioId":"press_militar_sentado","nombre":"Press militar sentado con mancuernas","grupo":"Hombros","series":3,"reps":"8-12","rir":2,"descansoSegundos":150,"esBasico":true,"tecnica":"Respaldo alto, core firme. No arquear la lumbar para completar la repeticion.","alternativas":["Press en maquina","Press Arnold liviano"]},{"orden":4,"ejercicioId":"prensa_unilateral","nombre":"Prensa a una pierna","grupo":"Piernas","series":3,"reps":"10-12 por pierna","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Pie centrado en la plataforma, recorrido controlado. Empezar siempre por la pierna mas debil.","alternativas":["Zancada estatica tomado de un soporte","Step-up a cajon bajo"]},{"orden":5,"ejercicioId":"curl_martillo","nombre":"Curl martillo","grupo":"Biceps","series":3,"reps":"12-15","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Codos pegados al torso, sin balanceo.","alternativas":["Curl con barra Z","Curl en polea"]},{"orden":6,"ejercicioId":"farmer_walk","nombre":"Farmer walk (caminata del granjero)","grupo":"Core y agarre","series":3,"reps":"40 metros","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Mancuernas pesadas a los costados, hombros atras, pasos cortos y firmes. Excelente para vos: alta demanda con cero impacto.","alternativas":["Suitcase carry (una sola mancuerna)","Caminata con trap bar"]}]},{"id":"s2-c","clave":"C","tipo":"fuerza","diaSugerido":"Viernes","nombre":"Dia C - Full body (enfasis cadera y espalda)","duracionEstimadaMin":55,"entradaEnCalor":"5 min de bici o eliptica suave + 1 serie liviana de los dos primeros ejercicios.","ejercicios":[{"orden":1,"ejercicioId":"hip_thrust","nombre":"Hip thrust","grupo":"Gluteos","series":3,"reps":"10-12","rir":2,"descansoSegundos":150,"esBasico":true,"tecnica":"Espalda alta apoyada en el banco, menton hacia el pecho. Pausa de 1 segundo arriba apretando el gluteo.","alternativas":["Puente de gluteos en el piso","Hip thrust en maquina"]},{"orden":2,"ejercicioId":"press_inclinado","nombre":"Press inclinado con mancuernas","grupo":"Pecho","series":3,"reps":"8-12","rir":2,"descansoSegundos":150,"esBasico":true,"tecnica":"Banco a 30 grados. Mas inclinacion carga el hombro sin dar mas pecho.","alternativas":["Press inclinado en maquina","Press inclinado en multipower"]},{"orden":3,"ejercicioId":"remo_unilateral","nombre":"Remo unilateral con mancuerna","grupo":"Espalda","series":3,"reps":"10-12 por lado","rir":2,"descansoSegundos":150,"esBasico":true,"tecnica":"Una rodilla y una mano apoyadas en el banco. Espalda paralela al piso, sin rotar el torso.","alternativas":["Remo en polea unilateral","Remo en maquina a un brazo"]},{"orden":4,"ejercicioId":"extension_cuadriceps","nombre":"Extension de cuadriceps","grupo":"Cuadriceps","series":3,"reps":"12-15","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Pausa arriba, bajada controlada. Si molesta la rodilla, reducir el rango final.","alternativas":["Sentadilla goblet a cajon","Prensa con recorrido corto"]},{"orden":5,"ejercicioId":"face_pull","nombre":"Face pull","grupo":"Hombro posterior","series":3,"reps":"15-20","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Polea a la altura de la cara, llevar la cuerda hacia la frente separando las manos. Clave para compensar tanto empuje.","alternativas":["Pajaro con mancuernas","Aperturas invertidas en maquina"]},{"orden":6,"ejercicioId":"pallof_press","nombre":"Pallof press","grupo":"Core","series":3,"reps":"12 por lado","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"De costado a la polea, extender los brazos al frente resistiendo la rotacion. No mover la cadera.","alternativas":["Plancha lateral","Pallof con banda elastica"]}]},{"id":"s2-cardio","clave":"CARDIO","tipo":"cardio","diaSugerido":"Jueves","nombre":"Cardio de baja intensidad (LISS)","duracionEstimadaMin":30,"entradaEnCalor":"3 min progresivos hasta llegar al ritmo objetivo.","ejercicios":[{"orden":1,"ejercicioId":"liss","nombre":"Cinta en pendiente, bici o eliptica","grupo":"Cardiovascular","series":1,"reps":"30 min continuos","rir":null,"descansoSegundos":0,"esBasico":false,"tecnica":"Cinta al 10-12 por ciento de inclinacion a 5 km/h caminando, o bici/eliptica a un ritmo donde puedas hablar con frases cortas. Sin trote: a 130 kg el impacto repetido es el mayor riesgo de lesion del plan.","alternativas":["Bicicleta fija","Eliptica","Remo ergometro a ritmo suave"]}]},{"id":"s2-futbol","clave":"FUTBOL","tipo":"deporte","diaSugerido":"Sabado","nombre":"Futbol","duracionEstimadaMin":90,"entradaEnCalor":"10 minutos reales antes de entrar: trote muy suave, movilidad de cadera y tobillo, 4 aceleraciones progresivas al 70 por ciento. Este calentamiento es la parte mas importante del dia.","ejercicios":[]}]},{"numero":3,"titulo":"Pico de volumen","foco":"Una serie mas en los basicos. Es la semana mas exigente del mes en cantidad de trabajo.","sesiones":[{"id":"s3-a","clave":"A","tipo":"fuerza","diaSugerido":"Lunes","nombre":"Dia A - Full body (enfasis empuje)","duracionEstimadaMin":65,"entradaEnCalor":"5 min de bici o eliptica suave + 1 serie liviana de los dos primeros ejercicios.","ejercicios":[{"orden":1,"ejercicioId":"sentadilla_goblet","nombre":"Sentadilla goblet","grupo":"Piernas","series":4,"reps":"8-12","rir":2,"descansoSegundos":150,"esBasico":true,"tecnica":"Mancuerna o pesa rusa sujeta contra el pecho. Bajar con el torso lo mas vertical posible, rodillas hacia afuera. Bajar hasta donde la espalda mantenga la curva natural.","alternativas":["Prensa 45 grados","Sentadilla en multipower"]},{"orden":2,"ejercicioId":"press_plano_mancuernas","nombre":"Press plano con mancuernas","grupo":"Pecho","series":4,"reps":"8-12","rir":2,"descansoSegundos":150,"esBasico":true,"tecnica":"Escapulas retraidas contra el banco. Codos a unos 45 grados del torso, no abiertos del todo.","alternativas":["Press en maquina","Press plano con barra"]},{"orden":3,"ejercicioId":"remo_maquina","nombre":"Remo en maquina con pecho apoyado","grupo":"Espalda","series":4,"reps":"10-12","rir":2,"descansoSegundos":150,"esBasico":true,"tecnica":"Llevar los codos hacia atras, no las manos. Pausa de medio segundo al final del recorrido.","alternativas":["Remo con barra T","Remo en polea baja"]},{"orden":4,"ejercicioId":"curl_femoral","nombre":"Curl femoral en maquina","grupo":"Isquiotibiales","series":3,"reps":"12-15","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Bajada controlada en 3 segundos. No despegar la cadera del apoyo.","alternativas":["Curl femoral sentado","Curl nordico asistido"]},{"orden":5,"ejercicioId":"elevaciones_laterales","nombre":"Elevaciones laterales","grupo":"Hombros","series":3,"reps":"12-15","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Peso liviano, subir hasta la altura del hombro. Sin impulso de cadera.","alternativas":["Elevaciones en polea","Elevaciones en maquina"]},{"orden":6,"ejercicioId":"plancha","nombre":"Plancha frontal","grupo":"Core","series":3,"reps":"30-45 seg","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Gluteos apretados y costillas hacia abajo. Si la zona lumbar se hunde, cortar la serie.","alternativas":["Plancha con rodillas apoyadas","Plancha en banco inclinado"]}]},{"id":"s3-b","clave":"B","tipo":"fuerza","diaSugerido":"Miercoles","nombre":"Dia B - Full body (enfasis traccion)","duracionEstimadaMin":65,"entradaEnCalor":"5 min de bici o eliptica suave + 1 serie liviana de los dos primeros ejercicios.","ejercicios":[{"orden":1,"ejercicioId":"peso_muerto_rumano","nombre":"Peso muerto rumano","grupo":"Isquiotibiales y gluteos","series":4,"reps":"8-10","rir":2,"descansoSegundos":150,"esBasico":true,"tecnica":"Llevar la cadera hacia atras con rodillas semiflexionadas. Bajar hasta sentir estiramiento en la parte posterior del muslo, no mas.","alternativas":["Peso muerto rumano con mancuernas","Buenos dias en multipower"]},{"orden":2,"ejercicioId":"jalon_pecho","nombre":"Jalon al pecho","grupo":"Espalda","series":4,"reps":"8-12","rir":2,"descansoSegundos":150,"esBasico":true,"tecnica":"Pecho arriba, llevar la barra a la clavicula. Sin balanceo del torso.","alternativas":["Dominadas asistidas en maquina","Jalon con agarre neutro"]},{"orden":3,"ejercicioId":"press_militar_sentado","nombre":"Press militar sentado con mancuernas","grupo":"Hombros","series":4,"reps":"8-12","rir":2,"descansoSegundos":150,"esBasico":true,"tecnica":"Respaldo alto, core firme. No arquear la lumbar para completar la repeticion.","alternativas":["Press en maquina","Press Arnold liviano"]},{"orden":4,"ejercicioId":"prensa_unilateral","nombre":"Prensa a una pierna","grupo":"Piernas","series":3,"reps":"10-12 por pierna","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Pie centrado en la plataforma, recorrido controlado. Empezar siempre por la pierna mas debil.","alternativas":["Zancada estatica tomado de un soporte","Step-up a cajon bajo"]},{"orden":5,"ejercicioId":"curl_martillo","nombre":"Curl martillo","grupo":"Biceps","series":3,"reps":"12-15","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Codos pegados al torso, sin balanceo.","alternativas":["Curl con barra Z","Curl en polea"]},{"orden":6,"ejercicioId":"farmer_walk","nombre":"Farmer walk (caminata del granjero)","grupo":"Core y agarre","series":3,"reps":"40 metros","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Mancuernas pesadas a los costados, hombros atras, pasos cortos y firmes. Excelente para vos: alta demanda con cero impacto.","alternativas":["Suitcase carry (una sola mancuerna)","Caminata con trap bar"]}]},{"id":"s3-c","clave":"C","tipo":"fuerza","diaSugerido":"Viernes","nombre":"Dia C - Full body (enfasis cadera y espalda)","duracionEstimadaMin":65,"entradaEnCalor":"5 min de bici o eliptica suave + 1 serie liviana de los dos primeros ejercicios.","ejercicios":[{"orden":1,"ejercicioId":"hip_thrust","nombre":"Hip thrust","grupo":"Gluteos","series":4,"reps":"10-12","rir":2,"descansoSegundos":150,"esBasico":true,"tecnica":"Espalda alta apoyada en el banco, menton hacia el pecho. Pausa de 1 segundo arriba apretando el gluteo.","alternativas":["Puente de gluteos en el piso","Hip thrust en maquina"]},{"orden":2,"ejercicioId":"press_inclinado","nombre":"Press inclinado con mancuernas","grupo":"Pecho","series":4,"reps":"8-12","rir":2,"descansoSegundos":150,"esBasico":true,"tecnica":"Banco a 30 grados. Mas inclinacion carga el hombro sin dar mas pecho.","alternativas":["Press inclinado en maquina","Press inclinado en multipower"]},{"orden":3,"ejercicioId":"remo_unilateral","nombre":"Remo unilateral con mancuerna","grupo":"Espalda","series":4,"reps":"10-12 por lado","rir":2,"descansoSegundos":150,"esBasico":true,"tecnica":"Una rodilla y una mano apoyadas en el banco. Espalda paralela al piso, sin rotar el torso.","alternativas":["Remo en polea unilateral","Remo en maquina a un brazo"]},{"orden":4,"ejercicioId":"extension_cuadriceps","nombre":"Extension de cuadriceps","grupo":"Cuadriceps","series":3,"reps":"12-15","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Pausa arriba, bajada controlada. Si molesta la rodilla, reducir el rango final.","alternativas":["Sentadilla goblet a cajon","Prensa con recorrido corto"]},{"orden":5,"ejercicioId":"face_pull","nombre":"Face pull","grupo":"Hombro posterior","series":3,"reps":"15-20","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Polea a la altura de la cara, llevar la cuerda hacia la frente separando las manos. Clave para compensar tanto empuje.","alternativas":["Pajaro con mancuernas","Aperturas invertidas en maquina"]},{"orden":6,"ejercicioId":"pallof_press","nombre":"Pallof press","grupo":"Core","series":3,"reps":"12 por lado","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"De costado a la polea, extender los brazos al frente resistiendo la rotacion. No mover la cadera.","alternativas":["Plancha lateral","Pallof con banda elastica"]}]},{"id":"s3-cardio","clave":"CARDIO","tipo":"cardio","diaSugerido":"Jueves","nombre":"Cardio de baja intensidad (LISS)","duracionEstimadaMin":35,"entradaEnCalor":"3 min progresivos hasta llegar al ritmo objetivo.","ejercicios":[{"orden":1,"ejercicioId":"liss","nombre":"Cinta en pendiente, bici o eliptica","grupo":"Cardiovascular","series":1,"reps":"35 min continuos","rir":null,"descansoSegundos":0,"esBasico":false,"tecnica":"Cinta al 10-12 por ciento de inclinacion a 5 km/h caminando, o bici/eliptica a un ritmo donde puedas hablar con frases cortas. Sin trote: a 130 kg el impacto repetido es el mayor riesgo de lesion del plan.","alternativas":["Bicicleta fija","Eliptica","Remo ergometro a ritmo suave"]}]},{"id":"s3-futbol","clave":"FUTBOL","tipo":"deporte","diaSugerido":"Sabado","nombre":"Futbol","duracionEstimadaMin":90,"entradaEnCalor":"10 minutos reales antes de entrar: trote muy suave, movilidad de cadera y tobillo, 4 aceleraciones progresivas al 70 por ciento. Este calentamiento es la parte mas importante del dia.","ejercicios":[]}]},{"numero":4,"titulo":"Intensidad y cierre","foco":"Menos repeticiones y mas peso en los basicos. Registrar los maximos del mes para arrancar el mes 2 desde ahi.","sesiones":[{"id":"s4-a","clave":"A","tipo":"fuerza","diaSugerido":"Lunes","nombre":"Dia A - Full body (enfasis empuje)","duracionEstimadaMin":55,"entradaEnCalor":"5 min de bici o eliptica suave + 1 serie liviana de los dos primeros ejercicios.","ejercicios":[{"orden":1,"ejercicioId":"sentadilla_goblet","nombre":"Sentadilla goblet","grupo":"Piernas","series":3,"reps":"6-8","rir":1,"descansoSegundos":150,"esBasico":true,"tecnica":"Mancuerna o pesa rusa sujeta contra el pecho. Bajar con el torso lo mas vertical posible, rodillas hacia afuera. Bajar hasta donde la espalda mantenga la curva natural.","alternativas":["Prensa 45 grados","Sentadilla en multipower"]},{"orden":2,"ejercicioId":"press_plano_mancuernas","nombre":"Press plano con mancuernas","grupo":"Pecho","series":3,"reps":"6-8","rir":1,"descansoSegundos":150,"esBasico":true,"tecnica":"Escapulas retraidas contra el banco. Codos a unos 45 grados del torso, no abiertos del todo.","alternativas":["Press en maquina","Press plano con barra"]},{"orden":3,"ejercicioId":"remo_maquina","nombre":"Remo en maquina con pecho apoyado","grupo":"Espalda","series":3,"reps":"8-10","rir":1,"descansoSegundos":150,"esBasico":true,"tecnica":"Llevar los codos hacia atras, no las manos. Pausa de medio segundo al final del recorrido.","alternativas":["Remo con barra T","Remo en polea baja"]},{"orden":4,"ejercicioId":"curl_femoral","nombre":"Curl femoral en maquina","grupo":"Isquiotibiales","series":3,"reps":"12-15","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Bajada controlada en 3 segundos. No despegar la cadera del apoyo.","alternativas":["Curl femoral sentado","Curl nordico asistido"]},{"orden":5,"ejercicioId":"elevaciones_laterales","nombre":"Elevaciones laterales","grupo":"Hombros","series":3,"reps":"12-15","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Peso liviano, subir hasta la altura del hombro. Sin impulso de cadera.","alternativas":["Elevaciones en polea","Elevaciones en maquina"]},{"orden":6,"ejercicioId":"plancha","nombre":"Plancha frontal","grupo":"Core","series":3,"reps":"30-45 seg","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Gluteos apretados y costillas hacia abajo. Si la zona lumbar se hunde, cortar la serie.","alternativas":["Plancha con rodillas apoyadas","Plancha en banco inclinado"]}]},{"id":"s4-b","clave":"B","tipo":"fuerza","diaSugerido":"Miercoles","nombre":"Dia B - Full body (enfasis traccion)","duracionEstimadaMin":55,"entradaEnCalor":"5 min de bici o eliptica suave + 1 serie liviana de los dos primeros ejercicios.","ejercicios":[{"orden":1,"ejercicioId":"peso_muerto_rumano","nombre":"Peso muerto rumano","grupo":"Isquiotibiales y gluteos","series":3,"reps":"6-8","rir":1,"descansoSegundos":150,"esBasico":true,"tecnica":"Llevar la cadera hacia atras con rodillas semiflexionadas. Bajar hasta sentir estiramiento en la parte posterior del muslo, no mas.","alternativas":["Peso muerto rumano con mancuernas","Buenos dias en multipower"]},{"orden":2,"ejercicioId":"jalon_pecho","nombre":"Jalon al pecho","grupo":"Espalda","series":3,"reps":"6-10","rir":1,"descansoSegundos":150,"esBasico":true,"tecnica":"Pecho arriba, llevar la barra a la clavicula. Sin balanceo del torso.","alternativas":["Dominadas asistidas en maquina","Jalon con agarre neutro"]},{"orden":3,"ejercicioId":"press_militar_sentado","nombre":"Press militar sentado con mancuernas","grupo":"Hombros","series":3,"reps":"6-10","rir":1,"descansoSegundos":150,"esBasico":true,"tecnica":"Respaldo alto, core firme. No arquear la lumbar para completar la repeticion.","alternativas":["Press en maquina","Press Arnold liviano"]},{"orden":4,"ejercicioId":"prensa_unilateral","nombre":"Prensa a una pierna","grupo":"Piernas","series":3,"reps":"10-12 por pierna","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Pie centrado en la plataforma, recorrido controlado. Empezar siempre por la pierna mas debil.","alternativas":["Zancada estatica tomado de un soporte","Step-up a cajon bajo"]},{"orden":5,"ejercicioId":"curl_martillo","nombre":"Curl martillo","grupo":"Biceps","series":3,"reps":"12-15","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Codos pegados al torso, sin balanceo.","alternativas":["Curl con barra Z","Curl en polea"]},{"orden":6,"ejercicioId":"farmer_walk","nombre":"Farmer walk (caminata del granjero)","grupo":"Core y agarre","series":3,"reps":"40 metros","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Mancuernas pesadas a los costados, hombros atras, pasos cortos y firmes. Excelente para vos: alta demanda con cero impacto.","alternativas":["Suitcase carry (una sola mancuerna)","Caminata con trap bar"]}]},{"id":"s4-c","clave":"C","tipo":"fuerza","diaSugerido":"Viernes","nombre":"Dia C - Full body (enfasis cadera y espalda)","duracionEstimadaMin":55,"entradaEnCalor":"5 min de bici o eliptica suave + 1 serie liviana de los dos primeros ejercicios.","ejercicios":[{"orden":1,"ejercicioId":"hip_thrust","nombre":"Hip thrust","grupo":"Gluteos","series":3,"reps":"8-10","rir":1,"descansoSegundos":150,"esBasico":true,"tecnica":"Espalda alta apoyada en el banco, menton hacia el pecho. Pausa de 1 segundo arriba apretando el gluteo.","alternativas":["Puente de gluteos en el piso","Hip thrust en maquina"]},{"orden":2,"ejercicioId":"press_inclinado","nombre":"Press inclinado con mancuernas","grupo":"Pecho","series":3,"reps":"6-10","rir":1,"descansoSegundos":150,"esBasico":true,"tecnica":"Banco a 30 grados. Mas inclinacion carga el hombro sin dar mas pecho.","alternativas":["Press inclinado en maquina","Press inclinado en multipower"]},{"orden":3,"ejercicioId":"remo_unilateral","nombre":"Remo unilateral con mancuerna","grupo":"Espalda","series":3,"reps":"8-10 por lado","rir":1,"descansoSegundos":150,"esBasico":true,"tecnica":"Una rodilla y una mano apoyadas en el banco. Espalda paralela al piso, sin rotar el torso.","alternativas":["Remo en polea unilateral","Remo en maquina a un brazo"]},{"orden":4,"ejercicioId":"extension_cuadriceps","nombre":"Extension de cuadriceps","grupo":"Cuadriceps","series":3,"reps":"12-15","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Pausa arriba, bajada controlada. Si molesta la rodilla, reducir el rango final.","alternativas":["Sentadilla goblet a cajon","Prensa con recorrido corto"]},{"orden":5,"ejercicioId":"face_pull","nombre":"Face pull","grupo":"Hombro posterior","series":3,"reps":"15-20","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"Polea a la altura de la cara, llevar la cuerda hacia la frente separando las manos. Clave para compensar tanto empuje.","alternativas":["Pajaro con mancuernas","Aperturas invertidas en maquina"]},{"orden":6,"ejercicioId":"pallof_press","nombre":"Pallof press","grupo":"Core","series":3,"reps":"12 por lado","rir":2,"descansoSegundos":75,"esBasico":false,"tecnica":"De costado a la polea, extender los brazos al frente resistiendo la rotacion. No mover la cadera.","alternativas":["Plancha lateral","Pallof con banda elastica"]}]},{"id":"s4-cardio","clave":"CARDIO","tipo":"cardio","diaSugerido":"Jueves","nombre":"Cardio de baja intensidad (LISS)","duracionEstimadaMin":40,"entradaEnCalor":"3 min progresivos hasta llegar al ritmo objetivo.","ejercicios":[{"orden":1,"ejercicioId":"liss","nombre":"Cinta en pendiente, bici o eliptica","grupo":"Cardiovascular","series":1,"reps":"40 min continuos","rir":null,"descansoSegundos":0,"esBasico":false,"tecnica":"Cinta al 10-12 por ciento de inclinacion a 5 km/h caminando, o bici/eliptica a un ritmo donde puedas hablar con frases cortas. Sin trote: a 130 kg el impacto repetido es el mayor riesgo de lesion del plan.","alternativas":["Bicicleta fija","Eliptica","Remo ergometro a ritmo suave"]}]},{"id":"s4-futbol","clave":"FUTBOL","tipo":"deporte","diaSugerido":"Sabado","nombre":"Futbol","duracionEstimadaMin":90,"entradaEnCalor":"10 minutos reales antes de entrar: trote muy suave, movilidad de cadera y tobillo, 4 aceleraciones progresivas al 70 por ciento. Este calentamiento es la parte mas importante del dia.","ejercicios":[]}]}],"notas":["Antes de arrancar, si no tenes un chequeo cardiologico reciente, hacete uno con ergometria. Es lo indicado antes de empezar trabajo de intensidad con este peso corporal.","El entrenamiento por si solo mueve poco la aguja de la balanza. El deficit calorico es lo que baja los kilos; la fuerza esta para que lo que se pierda sea grasa y no musculo.","Priorizar una ingesta alta de proteina para preservar masa muscular durante el deficit. Consultar con un nutricionista para ajustar las cantidades al caso concreto.","Dormir 7 horas o mas. Con poco sueno cae el rendimiento en el gimnasio y aumenta el apetito.","Si aparece dolor articular puntual (no la molestia muscular normal), cambiar por la alternativa indicada en el ejercicio y consultar si persiste."]};
+
+/* =========================================================
+   ICONOS (pictogramas SVG minimalistas por ejercicio)
+   ========================================================= */
+const EX_ICONS = {
+  _default: `<circle cx="24" cy="24" r="2.6" fill="currentColor" stroke="none"/><line x1="9" y1="24" x2="39" y2="24"/><rect x="5" y="19" width="7" height="10" rx="2"/><rect x="36" y="19" width="7" height="10" rx="2"/>`,
+
+  sentadilla_goblet: `<circle cx="24" cy="8" r="3.5"/><line x1="24" y1="11.5" x2="24" y2="20"/><path d="M24 20 L17 26 L17 35"/><path d="M24 20 L31 26 L31 35"/><line x1="14" y1="35" x2="20" y2="35"/><line x1="28" y1="35" x2="34" y2="35"/><path d="M20 13 L17 17 L17 20"/><path d="M28 13 L31 17 L31 20"/><circle cx="24" cy="17.5" r="3" fill="currentColor" stroke="none"/>`,
+
+  press_plano_mancuernas: `<circle cx="9" cy="28" r="3.5"/><line x1="12.5" y1="28" x2="27" y2="28"/><path d="M27 28 L33 22 L33 32"/><rect x="6" y="34" width="30" height="3.5" rx="1"/><line x1="18" y1="28" x2="14" y2="15"/><line x1="22" y1="28" x2="27" y2="15"/><circle cx="13" cy="13" r="3" fill="currentColor" stroke="none"/><circle cx="28" cy="13" r="3" fill="currentColor" stroke="none"/>`,
+
+  press_inclinado: `<circle cx="10" cy="30" r="3.5"/><line x1="13" y1="29" x2="26" y2="24"/><path d="M26 24 L32 27 L30 34"/><line x1="9" y1="37" x2="30" y2="24"/><line x1="19" y1="27" x2="17" y2="14"/><line x1="22" y1="25" x2="29" y2="13"/><circle cx="16" cy="12" r="3" fill="currentColor" stroke="none"/><circle cx="30" cy="11" r="3" fill="currentColor" stroke="none"/>`,
+
+  remo_maquina: `<circle cx="35" cy="14" r="3.5"/><line x1="35" y1="17.5" x2="35" y2="27"/><path d="M35 27 L30 32 L30 38"/><path d="M35 27 L40 32 L40 38"/><line x1="32" y1="20" x2="14" y2="20"/><line x1="32" y1="24" x2="16" y2="24"/><rect x="9" y="17" width="4" height="10" rx="1"/>`,
+
+  remo_unilateral: `<circle cx="11" cy="18" r="3.5"/><line x1="13" y1="21" x2="24" y2="30"/><line x1="24" y1="30" x2="34" y2="30"/><line x1="24" y1="30" x2="20" y2="38"/><line x1="24" y1="30" x2="30" y2="38"/><path d="M13 21 L20 18 L27 14"/><circle cx="27" cy="14" r="2.8" fill="currentColor" stroke="none"/>`,
+
+  curl_femoral: `<circle cx="9" cy="14" r="3.5"/><line x1="12" y1="14" x2="27" y2="14"/><rect x="6" y="20" width="30" height="3.5" rx="1"/><path d="M27 14 L32 20 L27 27"/><circle cx="27" cy="27" r="2.6" fill="currentColor" stroke="none"/>`,
+
+  extension_cuadriceps: `<circle cx="24" cy="8" r="3.5"/><line x1="24" y1="11.5" x2="24" y2="24"/><line x1="24" y1="24" x2="18" y2="34"/><path d="M24 24 L30 28 L36 24"/><circle cx="36" cy="24" r="2.6" fill="currentColor" stroke="none"/><line x1="16" y1="30" x2="22" y2="38"/>`,
+
+  elevaciones_laterales: `<circle cx="24" cy="8" r="3.5"/><line x1="24" y1="11.5" x2="24" y2="26"/><line x1="24" y1="26" x2="19" y2="35"/><line x1="24" y1="26" x2="29" y2="35"/><line x1="24" y1="16" x2="10" y2="19"/><line x1="24" y1="16" x2="38" y2="19"/><circle cx="9" cy="19.5" r="2.8" fill="currentColor" stroke="none"/><circle cx="39" cy="19.5" r="2.8" fill="currentColor" stroke="none"/>`,
+
+  press_militar_sentado: `<circle cx="24" cy="10" r="3.5"/><line x1="24" y1="13.5" x2="24" y2="26"/><line x1="24" y1="26" x2="19" y2="35"/><line x1="24" y1="26" x2="29" y2="35"/><line x1="24" y1="17" x2="15" y2="8"/><line x1="24" y1="17" x2="33" y2="8"/><circle cx="14" cy="6.5" r="3" fill="currentColor" stroke="none"/><circle cx="34" cy="6.5" r="3" fill="currentColor" stroke="none"/>`,
+
+  face_pull: `<circle cx="24" cy="10" r="3.5"/><line x1="24" y1="13.5" x2="24" y2="27"/><line x1="24" y1="27" x2="19" y2="36"/><line x1="24" y1="27" x2="29" y2="36"/><path d="M24 17 L16 15"/><path d="M24 17 L32 15"/><line x1="16" y1="15" x2="8" y2="16"/><line x1="32" y1="15" x2="40" y2="16"/><circle cx="8" cy="16" r="2" fill="currentColor" stroke="none"/><circle cx="40" cy="16" r="2" fill="currentColor" stroke="none"/>`,
+
+  prensa_unilateral: `<circle cx="10" cy="14" r="3.5"/><line x1="13" y1="15" x2="26" y2="20"/><rect x="30" y="10" width="4" height="24" rx="1"/><path d="M26 20 L30 22"/><line x1="14" y1="17" x2="18" y2="26"/>`,
+
+  curl_martillo: `<circle cx="24" cy="8" r="3.5"/><line x1="24" y1="11.5" x2="24" y2="26"/><line x1="24" y1="26" x2="19" y2="35"/><line x1="24" y1="26" x2="29" y2="35"/><line x1="21" y1="14" x2="17" y2="22"/><line x1="17" y1="22" x2="17" y2="14"/><rect x="14" y="12" width="6" height="4" rx="1"/><rect x="14" y="21" width="6" height="4" rx="1"/><line x1="27" y1="14" x2="27" y2="24"/>`,
+
+  farmer_walk: `<circle cx="24" cy="8" r="3.5"/><line x1="24" y1="11.5" x2="24" y2="26"/><path d="M24 26 L18 32 L21 38"/><path d="M24 26 L30 31 L27 38"/><line x1="24" y1="15" x2="16" y2="30"/><line x1="24" y1="15" x2="32" y2="30"/><rect x="13" y="29" width="6" height="4" rx="1"/><rect x="29" y="29" width="6" height="4" rx="1"/>`,
+
+  hip_thrust: `<line x1="6" y1="34" width="0" x2="6" y2="34"/><rect x="4" y="30" width="10" height="3.5" rx="1"/><circle cx="8" cy="24" r="3.2"/><line x1="10" y1="27" x2="22" y2="31"/><path d="M22 31 L30 24 L38 24"/><path d="M22 31 L26 38"/><line x1="30" y1="24" x2="34" y2="17"/>`,
+
+  plancha: `<circle cx="9" cy="26" r="3.5"/><line x1="12.5" y1="27" x2="38" y2="20"/><line x1="10" y1="34" x2="16" y2="30"/><line x1="34" y1="26" x2="40" y2="20"/>`,
+
+  peso_muerto_rumano: `<circle cx="24" cy="7" r="3.5"/><path d="M24 10.5 L18 24"/><path d="M18 24 L15 36"/><path d="M18 24 L23 36"/><line x1="18" y1="16" x2="10" y2="24"/><line x1="10" y1="15" x2="10" y2="30"/><circle cx="10" cy="14" r="2.6" fill="currentColor" stroke="none"/><circle cx="10" cy="30" r="2.6" fill="currentColor" stroke="none"/>`,
+
+  jalon_pecho: `<circle cx="24" cy="10" r="3.5"/><line x1="24" y1="13.5" x2="24" y2="27"/><line x1="24" y1="27" x2="19" y2="36"/><line x1="24" y1="27" x2="29" y2="36"/><path d="M24 18 L14 10"/><path d="M24 18 L34 10"/><line x1="10" y1="9" x2="38" y2="9"/><circle cx="10" cy="9" r="2" fill="currentColor" stroke="none"/><circle cx="38" cy="9" r="2" fill="currentColor" stroke="none"/>`,
+
+  pallof_press: `<circle cx="24" cy="8" r="3.5"/><line x1="24" y1="11.5" x2="24" y2="27"/><line x1="24" y1="27" x2="19" y2="36"/><line x1="24" y1="27" x2="29" y2="36"/><line x1="24" y1="17" x2="40" y2="17"/><circle cx="40" cy="17" r="2.4" fill="currentColor" stroke="none"/><path d="M6 24 Q 10 17 6 10" />`,
+
+  liss: `<circle cx="14" cy="8" r="3.5"/><path d="M14 11.5 L17 22 L11 30"/><path d="M17 22 L26 26"/><path d="M14 15 L8 22"/><path d="M11 30 L6 38"/><path d="M11 30 L18 36"/><line x1="30" y1="38" x2="42" y2="38"/><line x1="34" y1="38" x2="42" y2="30"/>`
+};
+function iconSvg(id, size){
+  const inner = EX_ICONS[id] || EX_ICONS._default;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+}
+
+/* =========================================================
+   ESTADO / STORAGE
+   ========================================================= */
+const LS_PREFIX = 'rutina_';
+const kTheme = LS_PREFIX + 'theme';
+const kWeek = LS_PREFIX + 'semana';
+const kPeso = (sesionId, ejercicioId) => `${LS_PREFIX}peso_${sesionId}_${ejercicioId}`;
+const kDone = (sesionId) => `${LS_PREFIX}done_${sesionId}`;
+
+function lsGet(key, fallback){
+  try{
+    const v = localStorage.getItem(key);
+    return v === null ? fallback : v;
+  }catch(e){ return fallback; }
+}
+function lsSet(key, value){
+  try{ localStorage.setItem(key, value); }catch(e){ /* storage no disponible */ }
+}
+
+let currentWeek = parseInt(lsGet(kWeek, '1'), 10) || 1;
+if(currentWeek < 1 || currentWeek > DATA.semanas.length) currentWeek = 1;
+
+/* =========================================================
+   TEMA
+   ========================================================= */
+function applyTheme(theme){
+  document.documentElement.dataset.theme = theme;
+  document.getElementById('theme-toggle').textContent = theme === 'dark' ? '🌙' : '☀️';
+  const meta = document.querySelector('meta[name=theme-color]');
+  if(meta) meta.setAttribute('content', theme === 'dark' ? '#0f1115' : '#f4f5f7');
+}
+applyTheme(lsGet(kTheme, 'dark'));
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  lsSet(kTheme, next);
+  applyTheme(next);
+});
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+let toastTimer = null;
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/* =========================================================
+   HEADER / SELECTOR DE SEMANA
+   ========================================================= */
+document.getElementById('app-title').textContent = DATA.meta.titulo;
+document.getElementById('app-objetivo').textContent = DATA.meta.objetivo;
+
+function renderWeekSelect(){
+  const wrap = document.getElementById('week-select');
+  wrap.innerHTML = '';
+  DATA.semanas.forEach(s => {
+    const btn = document.createElement('button');
+    btn.textContent = s.numero;
+    btn.className = s.numero === currentWeek ? 'active' : '';
+    btn.addEventListener('click', () => {
+      if(currentWeek === s.numero) return;
+      currentWeek = s.numero;
+      lsSet(kWeek, String(currentWeek));
+      renderAll();
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+/* =========================================================
+   BLOQUE DESTACADO DE SEMANA
+   ========================================================= */
+function countCompleted(semana){
+  let done = 0;
+  semana.sesiones.forEach(s => { if(lsGet(kDone(s.id), '0') === '1') done++; });
+  return done;
+}
+
+function renderWeekHighlight(semana){
+  const el = document.getElementById('week-highlight');
+  const done = countCompleted(semana);
+  el.innerHTML = `
+    <div class="week-label">Semana ${semana.numero} de ${DATA.semanas.length}</div>
+    <h2>${escapeHtml(semana.titulo)}</h2>
+    <div class="foco">${escapeHtml(semana.foco)}</div>
+    <div class="progreso" id="progreso-txt">${done} de ${semana.sesiones.length} sesiones completadas</div>
+  `;
+}
+function refreshProgreso(semana){
+  const el = document.getElementById('progreso-txt');
+  if(el) el.textContent = `${countCompleted(semana)} de ${semana.sesiones.length} sesiones completadas`;
+}
+
+/* =========================================================
+   TIMER DE DESCANSO
+   ========================================================= */
+function beep(){
+  try{
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    const ctx = new Ctx();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.value = 880;
+    g.gain.setValueAtTime(0.001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    o.connect(g); g.connect(ctx.destination);
+    o.start();
+    o.stop(ctx.currentTime + 0.55);
+    setTimeout(() => { try{ ctx.close(); }catch(e){} }, 700);
+  }catch(e){ /* audio no disponible */ }
+  if(navigator.vibrate) navigator.vibrate([250,100,250,100,250]);
+}
+function fmtTime(sec){
+  const m = Math.floor(sec/60);
+  const s = sec % 60;
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+function setupTimer(rowEl, totalSeconds){
+  const btn = rowEl.querySelector('.timer-btn');
+  const resetBtn = rowEl.querySelector('.timer-reset');
+  const numEl = btn.querySelector('.tnum');
+  let remaining = totalSeconds;
+  let interval = null;
+  let running = false;
+
+  function render(){ numEl.textContent = fmtTime(remaining); }
+  function tick(){
+    remaining--;
+    if(remaining <= 0){
+      remaining = 0;
+      render();
+      stop();
+      beep();
+      return;
+    }
+    render();
+  }
+  function start(){
+    running = true;
+    btn.classList.add('running');
+    interval = setInterval(tick, 1000);
+  }
+  function stop(){
+    running = false;
+    btn.classList.remove('running');
+    clearInterval(interval);
+  }
+  btn.addEventListener('click', () => {
+    if(running){ stop(); }
+    else{
+      if(remaining <= 0) remaining = totalSeconds;
+      start();
+    }
+  });
+  resetBtn.addEventListener('click', () => {
+    stop();
+    remaining = totalSeconds;
+    render();
+  });
+  render();
+}
+
+/* =========================================================
+   SESIONES
+   ========================================================= */
+function findPrevWeekSession(semana, sesion){
+  const idx = DATA.semanas.findIndex(s => s.numero === semana.numero);
+  if(idx <= 0) return null;
+  const prevSemana = DATA.semanas[idx - 1];
+  return prevSemana.sesiones.find(s => s.clave === sesion.clave) || null;
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+
+function renderExerciseRow(semana, sesion, ej){
+  const row = document.createElement('div');
+  row.className = 'ex-row' + (ej.esBasico ? ' basico' : '');
+
+  const pesoKey = kPeso(sesion.id, ej.ejercicioId);
+  const pesoValue = lsGet(pesoKey, '');
+
+  const prevSesion = findPrevWeekSession(semana, sesion);
+  let prevHint = '';
+  if(prevSesion){
+    const prevVal = lsGet(kPeso(prevSesion.id, ej.ejercicioId), '');
+    if(prevVal){
+      prevHint = `<div class="peso-hint">Semana anterior: <b>${escapeHtml(prevVal)}</b></div>`;
+    }
+  }
+
+  const altList = (ej.alternativas || []).map(a => `<li>${escapeHtml(a)}</li>`).join('');
+
+  row.innerHTML = `
+    <div class="ex-row-head">
+      <div class="ex-order">${ej.orden}</div>
+      <div class="ex-icon-wrap">${iconSvg(ej.ejercicioId, 22)}</div>
+      <div class="ex-title">
+        <div class="ex-nombre">${escapeHtml(ej.nombre)}${ej.esBasico ? '<span class="ex-tag-basico">Básico</span>' : ''}</div>
+      </div>
+    </div>
+    <div class="ex-stats">
+      <div class="stat"><div class="num">${ej.series}</div><div class="lbl">Series</div></div>
+      <div class="stat"><div class="num">${escapeHtml(ej.reps)}</div><div class="lbl">Reps</div></div>
+      <div class="stat"><div class="num">${ej.rir === null || ej.rir === undefined ? '—' : ej.rir}</div><div class="lbl">RIR</div></div>
+      <div class="stat"><div class="num">${ej.descansoSegundos ? fmtTime(ej.descansoSegundos) : '—'}</div><div class="lbl">Descanso</div></div>
+    </div>
+    <div class="ex-extra">
+      <div class="peso-field">
+        <label for="peso-${sesion.id}-${ej.ejercicioId}">Peso / registro</label>
+        <input type="text" id="peso-${sesion.id}-${ej.ejercicioId}" class="peso-input" data-key="${pesoKey}" placeholder="ej. 40x10, 40x9, 35x10" value="${escapeHtml(pesoValue)}">
+        ${prevHint}
+      </div>
+      <div class="row-actions">
+        ${ej.descansoSegundos ? `
+        <button class="btn timer-btn"><span>⏱</span><span class="tnum"></span></button>
+        <button class="btn timer-reset">↺ reiniciar</button>` : ''}
+        ${(ej.tecnica || altList) ? `<button class="btn tecnica-toggle">👁 ver técnica</button>` : ''}
+      </div>
+      ${(ej.tecnica || altList) ? `
+      <div class="tecnica-panel" hidden>
+        <div class="ex-icon-big">${iconSvg(ej.ejercicioId, 56)}</div>
+        <div class="tec-txt">${escapeHtml(ej.tecnica || '')}</div>
+        ${altList ? `<div class="alt-title">Alternativas</div><ul>${altList}</ul>` : ''}
+      </div>` : ''}
+    </div>
+  `;
+
+  const pesoInput = row.querySelector('.peso-input');
+  pesoInput.addEventListener('input', () => {
+    lsSet(pesoKey, pesoInput.value);
+  });
+
+  const tecBtn = row.querySelector('.tecnica-toggle');
+  if(tecBtn){
+    tecBtn.addEventListener('click', () => {
+      const panel = row.querySelector('.tecnica-panel');
+      const isHidden = panel.hidden;
+      panel.hidden = !isHidden;
+      tecBtn.textContent = isHidden ? '🙈 ocultar técnica' : '👁 ver técnica';
+    });
+  }
+
+  if(ej.descansoSegundos){
+    setupTimer(row, ej.descansoSegundos);
+  }
+
+  return row;
+}
+
+function renderSessionCard(semana, sesion){
+  const details = document.createElement('details');
+  details.className = 'session-card';
+  details.dataset.tipo = sesion.tipo;
+
+  const isDone = lsGet(kDone(sesion.id), '0') === '1';
+  if(isDone) details.classList.add('completed');
+
+  const tipoIcon = { fuerza: '🏋️', cardio: '🚶', deporte: '⚽' }[sesion.tipo] || '•';
+
+  const summary = document.createElement('summary');
+  summary.innerHTML = `
+    <span class="chk-wrap"><input type="checkbox" class="done-chk" ${isDone ? 'checked' : ''} aria-label="Marcar sesión completada"></span>
+    <span class="info">
+      <span class="dia">${escapeHtml(sesion.diaSugerido)} · ${tipoIcon} ${escapeHtml(sesion.tipo)}</span>
+      <span class="nombre">${escapeHtml(sesion.nombre)}</span>
+      <span class="meta">${sesion.duracionEstimadaMin ? sesion.duracionEstimadaMin + ' min aprox.' : ''}</span>
+    </span>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+  `;
+  details.appendChild(summary);
+
+  const chk = summary.querySelector('.done-chk');
+  chk.addEventListener('click', e => e.stopPropagation());
+  chk.addEventListener('change', () => {
+    lsSet(kDone(sesion.id), chk.checked ? '1' : '0');
+    details.classList.toggle('completed', chk.checked);
+    refreshProgreso(semana);
+  });
+
+  const body = document.createElement('div');
+  body.className = 'session-body';
+
+  if(sesion.entradaEnCalor){
+    body.innerHTML += `<div class="warmup"><b>Entrada en calor</b>${escapeHtml(sesion.entradaEnCalor)}</div>`;
+  }
+
+  if(sesion.ejercicios && sesion.ejercicios.length){
+    sesion.ejercicios.forEach(ej => {
+      body.appendChild(renderExerciseRow(semana, sesion, ej));
+    });
+  } else if(sesion.tipo === 'deporte'){
+    body.innerHTML += `<div class="deporte-note">Día de deporte libre. Enfocate en el calentamiento de arriba antes de entrar a jugar.</div>`;
+  }
+
+  details.appendChild(body);
+  return details;
+}
+
+function renderSessions(semana){
+  const wrap = document.getElementById('sessions');
+  wrap.innerHTML = '';
+  semana.sesiones.forEach(sesion => {
+    wrap.appendChild(renderSessionCard(semana, sesion));
+  });
+}
+
+/* =========================================================
+   SECCIONES INFORMATIVAS (fijas, no dependen de la semana)
+   ========================================================= */
+function renderPrincipios(){
+  const wrap = document.getElementById('principios');
+  wrap.innerHTML = DATA.principios.map(p => `
+    <div class="principio">
+      <h4>${escapeHtml(p.titulo)}</h4>
+      <p>${escapeHtml(p.detalle)}</p>
+    </div>
+  `).join('');
+}
+
+function renderCalendario(){
+  const wrap = document.getElementById('calendario');
+  wrap.innerHTML = DATA.calendarioSemanal.map(d => `
+    <div class="cal-day" data-tipo="${escapeHtml(d.tipo)}">
+      <div class="cal-dia">${escapeHtml(d.dia)}</div>
+      <div class="cal-act">${escapeHtml(d.actividad)}</div>
+    </div>
+  `).join('');
+}
+
+function renderNotas(){
+  const wrap = document.getElementById('notas');
+  wrap.innerHTML = DATA.notas.map(n => `<li>${escapeHtml(n)}</li>`).join('');
+}
+
+/* =========================================================
+   EXPORTAR
+   ========================================================= */
+document.getElementById('export-btn').addEventListener('click', () => {
+  const dump = {};
+  try{
+    for(let i = 0; i < localStorage.length; i++){
+      const key = localStorage.key(i);
+      if(key && key.startsWith(LS_PREFIX)){
+        dump[key] = localStorage.getItem(key);
+      }
+    }
+  }catch(e){ /* storage no disponible */ }
+
+  const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const fecha = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `rutina-registro-${fecha}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('Registro exportado');
+});
+
+/* =========================================================
+   RENDER GENERAL
+   ========================================================= */
+function renderAll(){
+  const semana = DATA.semanas.find(s => s.numero === currentWeek) || DATA.semanas[0];
+  renderWeekSelect();
+  renderWeekHighlight(semana);
+  renderSessions(semana);
+}
+
+renderAll();
+renderPrincipios();
+renderCalendario();
+renderNotas();
+</script>
+</body>
+</html>
