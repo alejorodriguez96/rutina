@@ -1,6 +1,6 @@
 # Rutina
 
-Planes de entrenamiento (perfiles Alejo, Pau y Alejo · Split), sitio estático de una sola página (`index.html`), pensado para consultarse desde el celular en el gimnasio.
+Planes de entrenamiento de 4 días (perfiles Alejo y Pau), sitio estático de una sola página (`index.html`), pensado para consultarse desde el celular en el gimnasio.
 
 - HTML + CSS + JS vanilla, sin dependencias ni build. Funciona abriendo `index.html` con doble clic, incluso sin conexión.
 - Los datos del plan están embebidos en el archivo, no hace falta `fetch`.
